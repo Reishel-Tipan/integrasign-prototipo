@@ -134,6 +134,33 @@
             <span>Cada firmante recibirá un enlace de un solo uso que vence a las 48 horas. Solo el firmante que tiene el turno recibe el aviso.</span>
           </div>
         </section>
+
+        <section class="card" id="bloque-preparar">
+          <div class="card-title"><h2><span class="num">5</span>Preparar el documento</h2><span class="small muted">Opcional</span></div>
+          <p class="small muted" style="margin-bottom:1rem">Complete el documento ahora: una vez iniciado el trámite ya no se podrá modificar.</p>
+
+          <div class="field">
+            <label>Copia de cédula y anexos</label>
+            <label class="dropzone" for="anexos" style="padding:1rem">
+              <span><strong>Adjuntar copia de cédula y anexos</strong> (PDF o imagen)</span>
+            </label>
+            <input id="anexos" type="file" accept=".pdf,image/*" multiple class="hidden">
+            <div id="anexos-info" class="hint"></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label class="check"><input type="checkbox" id="chk-comprimir"> <span><strong>Comprimir el documento</strong></span></label>
+              <select class="input" id="nivel" style="margin-top:.5rem" disabled>
+                <option>Compresión media (−56 %)</option><option>Compresión baja (−19 %)</option><option>Compresión alta (−75 %)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="check"><input type="checkbox" id="chk-proteger"> <span><strong>Proteger con contraseña</strong></span></label>
+              <input class="input" id="clave-doc" type="password" placeholder="Contraseña del documento" style="margin-top:.5rem" disabled>
+            </div>
+          </div>
+        </section>
       </div>
 
       <div class="row" style="justify-content:flex-end;margin-top:1.3rem">
@@ -148,7 +175,7 @@
 <div class="overlay" id="confirmacion">
   <div class="modal">
     <h2>Trámite iniciado</h2>
-    <p class="muted">El documento quedó bloqueado. Todos los firmantes firmarán con <strong id="tipo-elegido">firma manuscrita digitalizada</strong>. Se envió el correo con el enlace de firma a <strong>carlos.mendoza@correo.ec</strong>.</p>
+    <p class="muted">Desde ahora el documento no se puede modificar. Todos los firmantes firmarán con <strong id="tipo-elegido">firma manuscrita digitalizada</strong>. Se envió el correo con el enlace de firma a <strong>carlos.mendoza@correo.ec</strong>.</p>
     <div class="acciones">
       <a class="btn btn-primary" href="07-estado-tramite.html">Ver estado del trámite</a>
     </div>
@@ -187,6 +214,14 @@
       document.getElementById('aviso-solo').classList.toggle('hidden', !solo);
       document.getElementById('iniciar').textContent = solo ? 'Ir a Herramientas PDF' : 'Iniciar trámite y notificar al primer firmante';
     });
+  });
+
+  document.getElementById('anexos').addEventListener('change', function (e) {
+    const n = e.target.files.length;
+    document.getElementById('anexos-info').textContent = n ? n + (n === 1 ? ' archivo adjunto: ' : ' archivos adjuntos: ') + Array.from(e.target.files).map(function (f) { return f.name; }).join(', ') : '';
+  });
+  [['chk-comprimir', 'nivel'], ['chk-proteger', 'clave-doc']].forEach(function (p) {
+    document.getElementById(p[0]).addEventListener('change', function (e) { document.getElementById(p[1]).disabled = !e.target.checked; });
   });
 
   /* validación del tipo de firma: debe ser electrónica o manuscrita, una sola para todo el trámite */

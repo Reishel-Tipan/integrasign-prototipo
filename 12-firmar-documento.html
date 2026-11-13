@@ -43,6 +43,9 @@
             <input class="input" id="clave" type="password" placeholder="Clave de su archivo .p12">
           </div>
           <div class="alert info"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>El archivo y la clave se usan solo para firmar ahora y se eliminan enseguida. La plataforma no los guarda.</span></div>
+          <div class="alert warn" style="margin-top:.8rem"><svg class="ico" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>Antes de firmar se comprueba que su certificado esté dentro de su fecha de validez. La plataforma no verifica si fue revocado; puede comprobarlo en un validador oficial como FirmaEC.</span></div>
+          <label class="check" style="margin-top:.9rem"><input type="checkbox" id="declara"> <span>Declaro que mi certificado no ha sido revocado.</span></label>
+          <div class="alert bad hidden" id="err-cert" role="alert" style="margin-top:.8rem"><svg class="ico" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span id="err-cert-txt">Su certificado venció el 15/09/2026. Use un certificado vigente.</span></div>
         </div>
 
         <div class="panel active" id="m-man">
@@ -60,6 +63,7 @@
             <figure><div class="foto limpia">L. Andrade</div><figcaption>Firma limpia (fondo transparente)</figcaption></figure>
           </div>
           <div class="hint" style="margin-top:.7rem">Esta es la firma que se colocará en el documento.</div>
+          <div class="alert info" style="margin-top:.8rem"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>La firma manuscrita es una imagen de su firma y no garantiza la autenticidad como una firma electrónica.</span></div>
         </div>
       </div>
 
@@ -108,7 +112,25 @@
     document.getElementById('fb-carlos').innerHTML = '<span class="sello">Firmado con .p12<br>22/10/2026</span>Carlos Mendoza';
     document.getElementById('fb-lucia').innerHTML = '<span class="sello">Se firmará<br>con .p12</span>Lucía Andrade';
   }
-  document.getElementById('firmar').addEventListener('click', function () { abrirModal('listo'); });
+  const errCert = document.getElementById('err-cert');
+  const esP12 = function () { return document.getElementById('m-p12').classList.contains('active'); };
+  /* ejemplo de error: ?tipo=electronica&error=vencido, o subir un archivo cuyo nombre contenga «vencido» */
+  if (/error=vencido/.test(location.search)) errCert.classList.remove('hidden');
+  document.addEventListener('archivo-listo', function () {
+    const f = document.getElementById('p12').files[0];
+    if (f && /vencid/i.test(f.name)) errCert.classList.remove('hidden');
+  });
+  document.getElementById('firmar').addEventListener('click', function () {
+    if (esP12()) {
+      if (!document.getElementById('err-cert').classList.contains('hidden')) return;
+      if (!document.getElementById('declara').checked) {
+        document.getElementById('err-cert-txt').textContent = 'Debe marcar la declaración de que su certificado no ha sido revocado.';
+        errCert.classList.remove('hidden');
+        return;
+      }
+    }
+    abrirModal('listo');
+  });
 </script>
 </body>
 </html>
