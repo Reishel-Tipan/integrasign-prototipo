@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IntegraSign · Mapa de pantallas</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<div class="mapa">
+  <div id="marca" style="color:var(--c-800);font-size:1.3rem"></div>
+  <h1>Prototipo de interfaz</h1>
+  <p class="muted">Pantallas de ejemplo con datos fijos, sin servidor. Use este mapa para recorrerlas en cualquier orden.</p>
+
+  <div class="grupo">
+    <h2>Acceso y cuenta</h2>
+    <div class="lista">
+      <a href="01-inicio-sesion.html"><b>01</b>Inicio de sesión<small>Con «admin» en el correo se detecta al administrador</small></a>
+      <a href="02-verificacion-administrador.html"><b>02</b>Verificación del administrador<small>Segundo factor con certificado .p12</small></a>
+      <a href="03-registro.html"><b>03</b>Registro de usuario<small>Datos personales y correo</small></a>
+      <a href="04-verificar-correo.html"><b>04</b>Verificación de correo<small>Código de 6 dígitos</small></a>
+    </div>
+  </div>
+
+  <div class="grupo">
+    <h2>Solicitante</h2>
+    <div class="lista">
+      <a href="05-mis-tramites.html"><b>05</b>Mis trámites<small>Lista y estados</small></a>
+      <a href="06-nuevo-tramite.html"><b>06</b>Nuevo trámite<small>Documento, firmantes, orden y tipo</small></a>
+      <a href="07-estado-tramite.html"><b>07</b>Estado del trámite<small>Línea de firmas, rechazo y vencimiento</small></a>
+      <a href="08-herramientas-pdf.html"><b>08</b>Herramientas PDF<small>Unir, extraer, comprimir, proteger</small></a>
+      <a href="09-documento-final.html"><b>09</b>Documento final<small>Descarga y ajustes finales</small></a>
+    </div>
+  </div>
+
+  <div class="grupo">
+    <h2>Firmante (acceso por enlace del correo)</h2>
+    <div class="lista">
+      <a href="10-correo-turno.html"><b>10</b>Correo de turno<small>Aviso con enlace temporal</small></a>
+      <a href="11-revisar-documento.html"><b>11</b>Revisar documento<small>Aceptar o rechazar</small></a>
+      <a href="12-firmar-documento.html"><b>12</b>Firmar documento<small>Certificado .p12 o firma manuscrita</small></a>
+      <a href="13-enlace-vencido.html"><b>13</b>Enlace vencido<small>Mensaje al usar un enlace caducado</small></a>
+    </div>
+  </div>
+
+  <div class="grupo">
+    <h2>Administrador</h2>
+    <div class="lista">
+      <a href="14-panel-administrador.html"><b>14</b>Panel de administración<small>Cuentas, trámites y parámetros</small></a>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script>document.getElementById('marca').innerHTML = MARCA;</script>
+</body>
+</html>

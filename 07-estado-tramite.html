@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estado del trámite · IntegraSign</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body data-rol="solicitante" data-activo="tramites" data-ruta="Trámites / Mis trámites / Estado del trámite">
+<div class="app">
+  <aside class="sidebar" id="menu"></aside>
+  <div class="main">
+    <header class="topbar" id="barra"></header>
+    <main class="content">
+
+      <div class="page-head">
+        <div>
+          <h1>Contrato de prestación de servicios</h1>
+          <p>Contrato_servicios_2026.pdf · iniciado el 22 oct 2026 a las 09:15</p>
+        </div>
+        <span class="badge curso" id="etiqueta" style="font-size:.9rem;padding:.3rem .9rem">En curso</span>
+      </div>
+
+      <div class="row wrap" style="margin-bottom:1.1rem">
+        <span class="small muted">Ver ejemplo de estado:</span>
+        <div class="seg" id="estados">
+          <label><input type="radio" name="est" value="curso" checked><span>En curso</span></label>
+          <label><input type="radio" name="est" value="rechazado"><span>Rechazado</span></label>
+          <label><input type="radio" name="est" value="vencido"><span>Vencido</span></label>
+          <label><input type="radio" name="est" value="concluido"><span>Concluido</span></label>
+        </div>
+      </div>
+
+      <div id="alerta"></div>
+
+      <div class="cols">
+        <section class="card">
+          <div class="card-title"><h2>Línea de firmas</h2><span class="small muted" id="progreso">1 de 3 firmas completadas</span></div>
+          <ol class="timeline" id="linea"></ol>
+        </section>
+
+        <aside>
+          <section class="card">
+            <h3 style="margin-bottom:.8rem">Detalle del trámite</h3>
+            <div class="mail-resumen" style="margin:0">
+              <div><span>Solicitante</span><span>Daniela Paredes</span></div>
+              <div><span>Tipo de firma</span><span>Manuscrita digitalizada</span></div>
+              <div><span>Páginas</span><span>8</span></div>
+              <div><span>Tamaño</span><span>1,2 MB</span></div>
+              <div><span>Vigencia del enlace</span><span>48 horas</span></div>
+            </div>
+            <div class="stack" style="margin-top:1rem">
+              <a class="btn btn-secondary btn-block" href="09-documento-final.html" id="btn-final">Ir al documento final</a>
+              <div id="acciones" class="stack hidden">
+                <button class="btn btn-primary btn-block" type="button" id="btn-reenviar">Reenviar convocatoria con enlace nuevo</button>
+                <button class="btn btn-danger btn-block" type="button" id="btn-cancelar">Cancelar trámite</button>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  const FIRMANTES = [
+    { n: 'Carlos Mendoza', c: 'Firma manuscrita' },
+    { n: 'Lucía Andrade', c: 'Firma manuscrita' },
+    { n: 'Daniela Paredes (solicitante)', c: 'Firma manuscrita' }
+  ];
+  const ESTADOS = {
+    curso: {
+      etiqueta: ['curso', 'En curso'], progreso: '1 de 3 firmas completadas',
+      alerta: '<div class="alert info" style="margin-bottom:1.1rem">' + ico('reloj') + '<span>Es el turno de <strong>Lucía Andrade</strong>. Se le envió el enlace de firma, que vence en 41 h 20 min.</span></div>',
+      filas: [['done', 'Firmó el 22 oct, 09:42'], ['turn', 'Turno activo · enlace enviado el 22 oct, 09:43'], ['', 'Pendiente · recibirá el aviso cuando firme Lucía Andrade']],
+      final: false
+    },
+    rechazado: {
+      etiqueta: ['bad', 'Rechazado'], progreso: '1 de 3 firmas completadas',
+      alerta: '<div class="alert bad" style="margin-bottom:1.1rem">' + ico('alerta') + '<span><strong>Lucía Andrade rechazó la firma.</strong> Motivo: «La cláusula quinta no coincide con lo acordado en la reunión.» El trámite quedó detenido.</span></div>',
+      filas: [['done', 'Firmó el 22 oct, 09:42'], ['rej', 'Rechazó el 22 oct, 14:05'], ['', 'No recibió el turno']],
+      final: false, reintentar: true
+    },
+    vencido: {
+      etiqueta: ['warn', 'Vencido'], progreso: '1 de 3 firmas completadas',
+      alerta: '<div class="alert warn" style="margin-bottom:1.1rem">' + ico('reloj') + '<span>El enlace de <strong>Lucía Andrade</strong> venció sin ser usado. Se registró el trámite como vencido y se conservan las firmas que ya se habían realizado.</span></div>',
+      filas: [['done', 'Firmó el 22 oct, 09:42'], ['exp', 'Enlace vencido el 24 oct, 09:43'], ['', 'No recibió el turno']],
+      final: false, reintentar: true
+    },
+    concluido: {
+      etiqueta: ['ok', 'Concluido'], progreso: '3 de 3 firmas completadas',
+      alerta: '<div class="alert ok" style="margin-bottom:1.1rem">' + ico('check') + '<span>Todas las firmas se completaron. El documento final ya está disponible para descargar.</span></div>',
+      filas: [['done', 'Firmó el 22 oct, 09:42'], ['done', 'Firmó el 22 oct, 16:30'], ['done', 'Firmó el 23 oct, 08:12']],
+      final: true
+    }
+  };
+  function pintar(clave) {
+    const e = ESTADOS[clave];
+    const et = document.getElementById('etiqueta');
+    et.className = 'badge ' + e.etiqueta[0]; et.textContent = e.etiqueta[1];
+    document.getElementById('progreso').textContent = e.progreso;
+    document.getElementById('alerta').innerHTML = e.alerta;
+    document.getElementById('linea').innerHTML = FIRMANTES.map(function (f, i) {
+      const clase = e.filas[i][0];
+      const simbolo = clase === 'done' ? '&#10003;' : clase === 'rej' ? '&#10005;' : clase === 'exp' ? '!' : (i + 1);
+      return '<li class="' + clase + '"><span class="dot">' + simbolo + '</span><div class="who">' + f.n + '</div>' +
+             '<div class="small muted">' + f.c + '</div><div class="when">' + e.filas[i][1] + '</div></li>';
+    }).join('');
+    document.getElementById('btn-final').classList.toggle('hidden', !e.final);
+    document.getElementById('acciones').classList.toggle('hidden', !e.reintentar);
+  }
+  document.querySelectorAll('input[name=est]').forEach(function (r) {
+    r.addEventListener('change', function () { pintar(r.value); });
+  });
+  const pedido = (location.search.match(/estado=(\w+)/) || [])[1];
+  const inicial = ESTADOS[pedido] ? pedido : 'curso';
+  const radio = document.querySelector('input[name=est][value=' + inicial + ']');
+  if (radio) radio.checked = true;
+  pintar(inicial);
+  document.getElementById('btn-reenviar').addEventListener('click', function () { aviso('Se envió un enlace nuevo a Lucía Andrade. Vence en 48 horas.'); });
+  document.getElementById('btn-cancelar').addEventListener('click', function () { aviso('El trámite fue cancelado.'); });
+</script>
+</body>
+</html>

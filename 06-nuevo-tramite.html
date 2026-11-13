@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nuevo trámite · IntegraSign</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .tipos { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .tipo-op { position: relative; display: block; cursor: pointer; }
+    .tipo-op input { position: absolute; opacity: 0; }
+    .tipo-op .caja { display: block; height: 100%; padding: 1rem 1.1rem; background: #fff; border: 2px solid var(--line); border-radius: 10px; transition: border-color .15s, background .15s; }
+    .tipo-op:hover .caja { border-color: var(--c-300); }
+    .tipo-op input:checked + .caja { border-color: var(--c-600); background: var(--c-50); }
+    .tipo-op input:focus-visible + .caja { outline: 2px solid var(--c-400); outline-offset: 2px; }
+    .tipo-op strong { display: flex; align-items: center; gap: .5rem; color: var(--c-800); margin-bottom: .25rem; }
+    .tipo-op .marca { width: 18px; height: 18px; border: 2px solid #9bb8b7; border-radius: 50%; flex: none; }
+    .tipo-op input:checked + .caja .marca { border-color: var(--c-600); background: radial-gradient(var(--c-600) 45%, #fff 50%); }
+    .tipo-op span.d { font-size: .88rem; color: var(--ink-soft); }
+    .tipos.invalido .caja { border-color: #d9908b; }
+    #bloque-firma { margin-top: 1.1rem; }
+    .error-msg { display: none; margin-top: .7rem; }
+    .error-msg.show { display: flex; }
+  </style>
+</head>
+<body data-rol="solicitante" data-activo="nuevo" data-ruta="Trámites / Nuevo trámite">
+<div class="app">
+  <aside class="sidebar" id="menu"></aside>
+  <div class="main">
+    <header class="topbar" id="barra"></header>
+    <main class="content">
+
+      <div class="page-head">
+        <div>
+          <h1>Nuevo trámite</h1>
+          <p>Cargue el documento, elija el tipo de firma y defina quiénes firman y en qué orden.</p>
+        </div>
+      </div>
+
+      <section class="card">
+        <div class="card-title"><h2><span class="num">1</span>Documento</h2></div>
+        <div id="doc-cargado" class="file-ok">
+          <div class="tipo">PDF</div>
+          <div class="meta"><strong>Contrato_servicios_2026.pdf</strong><small>1,2 MB · 8 páginas</small></div>
+          <button class="btn btn-ghost btn-sm" type="button">Cambiar</button>
+        </div>
+        <div class="hint">Solo archivos PDF de hasta 20 MB.</div>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><h2><span class="num">2</span>¿Qué desea hacer con el documento?</h2></div>
+        <div class="seg" id="modo">
+          <label><input type="radio" name="modo" value="firma" checked><span>Solicitar firmas</span></label>
+          <label><input type="radio" name="modo" value="solo"><span>Solo operar el documento</span></label>
+        </div>
+        <div id="aviso-solo" class="alert info hidden" style="margin-top:1rem">
+          <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+          <span>No se iniciará un trámite de firma. Podrá unir, extraer páginas, comprimir o proteger el documento desde <a href="08-herramientas-pdf.html">Herramientas PDF</a>.</span>
+        </div>
+      </section>
+
+      <div id="bloque-firma">
+        <section class="card" id="bloque-tipo">
+          <div class="card-title"><h2><span class="num">3</span>Tipo de firma del trámite</h2><span class="small muted">Obligatorio</span></div>
+          <div class="tipos" id="tipos">
+            <label class="tipo-op">
+              <input type="radio" name="tipo" value="electrónica">
+              <span class="caja">
+                <strong><span class="marca"></span>Firma electrónica (.p12)</strong>
+                <span class="d">Cada firmante usa su certificado digital y su clave. Es la modalidad para los trámites oficiales.</span>
+              </span>
+            </label>
+            <label class="tipo-op">
+              <input type="radio" name="tipo" value="manuscrita">
+              <span class="caja">
+                <strong><span class="marca"></span>Firma manuscrita digitalizada</strong>
+                <span class="d">Cada firmante sube una foto de su firma y el sistema la limpia. Es la modalidad para los trámites internos.</span>
+              </span>
+            </label>
+          </div>
+          <div class="hint">Todos los firmantes del trámite deben firmar con el mismo tipo: no se pueden combinar firmas electrónicas y manuscritas.</div>
+          <div class="alert bad error-msg" id="err-tipo" role="alert">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+            <span>Elija el tipo de firma del trámite: firma electrónica o firma manuscrita. No se puede iniciar el trámite sin esta selección.</span>
+          </div>
+        </section>
+
+        <section class="card" id="bloque-firmantes">
+          <div class="card-title">
+            <h2><span class="num">4</span>Firmantes y orden de firma</h2>
+            <span class="small muted" id="contador">3 de 5 firmantes</span>
+          </div>
+
+          <ul class="signers" id="lista">
+            <li class="signer">
+              <span class="ord">1</span>
+              <input class="input" value="Carlos Mendoza" aria-label="Nombre">
+              <input class="input" value="carlos.mendoza@correo.ec" aria-label="Correo">
+              <span class="acciones">
+                <button class="icon-btn" type="button" title="Subir" data-mover="-1"><svg class="ico" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+                <button class="icon-btn" type="button" title="Bajar" data-mover="1"><svg class="ico" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+                <button class="icon-btn" type="button" title="Quitar" data-quitar><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+              </span>
+            </li>
+            <li class="signer">
+              <span class="ord">2</span>
+              <input class="input" value="Lucía Andrade" aria-label="Nombre">
+              <input class="input" value="lucia.andrade@correo.ec" aria-label="Correo">
+              <span class="acciones">
+                <button class="icon-btn" type="button" title="Subir" data-mover="-1"><svg class="ico" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+                <button class="icon-btn" type="button" title="Bajar" data-mover="1"><svg class="ico" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+                <button class="icon-btn" type="button" title="Quitar" data-quitar><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+              </span>
+            </li>
+            <li class="signer">
+              <span class="ord">3</span>
+              <input class="input" value="Daniela Paredes (yo)" aria-label="Nombre">
+              <input class="input" value="daniela.paredes@correo.ec" aria-label="Correo">
+              <span class="acciones">
+                <button class="icon-btn" type="button" title="Subir" data-mover="-1"><svg class="ico" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+                <button class="icon-btn" type="button" title="Bajar" data-mover="1"><svg class="ico" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+                <button class="icon-btn" type="button" title="Quitar" data-quitar><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+              </span>
+            </li>
+          </ul>
+
+          <div class="row between wrap" style="margin-top:1rem">
+            <button class="btn btn-secondary btn-sm" type="button" id="agregar"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Agregar firmante</button>
+            <label class="check"><input type="checkbox" checked> <span>Yo también firmo este documento</span></label>
+          </div>
+
+          <div class="alert info" style="margin-top:1.1rem">
+            <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span>Cada firmante recibirá un enlace de un solo uso que vence a las 48 horas. Solo el firmante que tiene el turno recibe el aviso.</span>
+          </div>
+        </section>
+      </div>
+
+      <div class="row" style="justify-content:flex-end;margin-top:1.3rem">
+        <a class="btn btn-ghost" href="05-mis-tramites.html">Cancelar</a>
+        <button class="btn btn-primary" type="button" id="iniciar">Iniciar trámite y notificar al primer firmante</button>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="overlay" id="confirmacion">
+  <div class="modal">
+    <h2>Trámite iniciado</h2>
+    <p class="muted">El documento quedó bloqueado. Todos los firmantes firmarán con <strong id="tipo-elegido">firma manuscrita digitalizada</strong>. Se envió el correo con el enlace de firma a <strong>carlos.mendoza@correo.ec</strong>.</p>
+    <div class="acciones">
+      <a class="btn btn-primary" href="07-estado-tramite.html">Ver estado del trámite</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  const lista = document.getElementById('lista');
+  function renumerar() {
+    const filas = lista.querySelectorAll('.signer');
+    filas.forEach(function (f, i) { f.querySelector('.ord').textContent = i + 1; });
+    document.getElementById('contador').textContent = filas.length + ' de 5 firmantes';
+    document.getElementById('agregar').disabled = filas.length >= 5;
+  }
+  lista.addEventListener('click', function (e) {
+    const b = e.target.closest('button'); if (!b) return;
+    const fila = b.closest('.signer');
+    if (b.hasAttribute('data-quitar')) { fila.remove(); renumerar(); return; }
+    const d = parseInt(b.dataset.mover, 10);
+    if (d === -1 && fila.previousElementSibling) fila.parentNode.insertBefore(fila, fila.previousElementSibling);
+    if (d === 1 && fila.nextElementSibling) fila.parentNode.insertBefore(fila.nextElementSibling, fila);
+    renumerar();
+  });
+  document.getElementById('agregar').addEventListener('click', function () {
+    const nueva = lista.lastElementChild.cloneNode(true);
+    nueva.querySelectorAll('input.input').forEach(function (i) { i.value = ''; });
+    lista.appendChild(nueva); renumerar();
+  });
+
+  const soloOperar = function () { return document.querySelector('input[name=modo]:checked').value === 'solo'; };
+  document.querySelectorAll('input[name=modo]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      const solo = soloOperar();
+      document.getElementById('bloque-firma').classList.toggle('hidden', solo);
+      document.getElementById('aviso-solo').classList.toggle('hidden', !solo);
+      document.getElementById('iniciar').textContent = solo ? 'Ir a Herramientas PDF' : 'Iniciar trámite y notificar al primer firmante';
+    });
+  });
+
+  /* validación del tipo de firma: debe ser electrónica o manuscrita, una sola para todo el trámite */
+  function tipoElegido() { const t = document.querySelector('input[name=tipo]:checked'); return t ? t.value : null; }
+  function validar() {
+    const ok = tipoElegido() !== null;
+    document.getElementById('tipos').classList.toggle('invalido', !ok);
+    document.getElementById('err-tipo').classList.toggle('show', !ok);
+    if (!ok) document.getElementById('bloque-tipo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return ok;
+  }
+  document.querySelectorAll('input[name=tipo]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      document.getElementById('tipos').classList.remove('invalido');
+      document.getElementById('err-tipo').classList.remove('show');
+    });
+  });
+  document.getElementById('iniciar').addEventListener('click', function () {
+    if (soloOperar()) { location.href = '08-herramientas-pdf.html'; return; }
+    if (!validar()) return;
+    document.getElementById('tipo-elegido').textContent = tipoElegido() === 'manuscrita' ? 'firma manuscrita digitalizada' : 'firma electrónica (.p12)';
+    abrirModal('confirmacion');
+  });
+
+  /* parámetros para las capturas: ?tipo=manuscrita | ?tipo=electronica | ?validar=1 */
+  const q = location.search;
+  if (/tipo=manuscrita/.test(q)) document.querySelector('input[name=tipo][value=manuscrita]').checked = true;
+  if (/tipo=electronica/.test(q)) document.querySelector('input[name=tipo][value="electrónica"]').checked = true;
+  if (/validar=1/.test(q)) validar();
+</script>
+</body>
+</html>

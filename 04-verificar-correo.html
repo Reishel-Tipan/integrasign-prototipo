@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verificar correo · IntegraSign</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<div class="auth">
+  <aside class="auth-side">
+    <div class="brand" id="marca"></div>
+    <div>
+      <h2>Un último paso para activar su cuenta</h2>
+      <ul>
+        <li><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Así comprobamos que el correo es real y que le pertenece</li>
+      </ul>
+    </div>
+    <div class="foot"></div>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <div id="vista-codigo">
+        <h1>Revise su correo</h1>
+        <p class="lead">Enviamos un código de 6 dígitos a <strong id="destino">daniela.paredes@correo.ec</strong>. Escríbalo para activar su cuenta.</p>
+
+        <div class="otp" id="otp">
+          <input inputmode="numeric" maxlength="1" value="4"><input inputmode="numeric" maxlength="1" value="8"><input inputmode="numeric" maxlength="1" value="2">
+          <input inputmode="numeric" maxlength="1" value="9"><input inputmode="numeric" maxlength="1" value="1"><input inputmode="numeric" maxlength="1" value="3">
+        </div>
+
+        <button id="verificar" class="btn btn-primary btn-block" type="button">Verificar código</button>
+        <div class="auth-links">
+          ¿No le llegó? <a href="#" id="reenviar">Reenviar código</a> <span class="muted" id="cuenta">(disponible en 0:45)</span><br>
+          <a href="03-registro.html">Cambiar el correo electrónico</a>
+        </div>
+
+        <div class="nota-proto"><strong>Nota del prototipo:</strong> el código aparece ya escrito. Cualquier código de 6 dígitos activa la cuenta.</div>
+      </div>
+
+      <div id="vista-ok" class="hidden" style="text-align:center">
+        <div class="mensaje" style="padding-top:0">
+          <div class="gran" style="background:var(--ok-bg);color:var(--ok)"><svg class="ico" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+          <h1>Cuenta activada</h1>
+          <p class="lead muted" style="margin-top:.5rem">Su correo quedó verificado. Ya puede iniciar sesión.</p>
+          <a class="btn btn-primary btn-block" href="01-inicio-sesion.html">Ir a iniciar sesión</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('marca').outerHTML = MARCA;
+  activarCodigo('#otp');
+  try {
+    const c = sessionStorage.getItem('correoRegistro');
+    if (c) document.getElementById('destino').textContent = c;
+  } catch (x) {}
+  document.getElementById('verificar').addEventListener('click', function () {
+    document.getElementById('vista-codigo').classList.add('hidden');
+    document.getElementById('vista-ok').classList.remove('hidden');
+  });
+  document.getElementById('reenviar').addEventListener('click', function (e) {
+    e.preventDefault(); aviso('Se envió un nuevo código a su correo.');
+  });
+  let seg = 45;
+  const cuenta = document.getElementById('cuenta');
+  setInterval(function () {
+    if (seg > 0) { seg--; cuenta.textContent = '(disponible en 0:' + String(seg).padStart(2, '0') + ')'; }
+    else cuenta.textContent = '';
+  }, 1000);
+</script>
+</body>
+</html>

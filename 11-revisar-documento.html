@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revisar documento · IntegraSign</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<header class="simple-top">
+  <span id="marca"></span>
+  <span class="link-info"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Enlace temporal · vence en 47 h 12 min</span>
+</header>
+
+<main class="content" style="margin:0 auto">
+  <div class="page-head">
+    <div>
+      <h1>Revisar documento</h1>
+      <p>Lea el documento completo y decida si acepta firmarlo.</p>
+    </div>
+    <span class="badge curso" style="font-size:.9rem;padding:.3rem .9rem">Su turno: 2 de 3</span>
+  </div>
+
+  <div class="cols">
+    <section class="visor">
+      <div class="visor-bar">
+        <strong>Contrato_servicios_2026.pdf</strong>
+        <span class="row"><button class="icon-btn" type="button">‹</button><span class="visor-paginas">Página 1 de 8</span><button class="icon-btn" type="button">›</button></span>
+      </div>
+      <div class="hoja">
+        <h4>CONTRATO DE PRESTACIÓN DE SERVICIOS</h4>
+        <div class="ln m"></div><div class="ln"></div><div class="ln s"></div><div class="ln m"></div><div class="gap"></div>
+        <div class="ln"></div><div class="ln s"></div><div class="ln m"></div><div class="ln x"></div><div class="gap"></div>
+        <div class="ln m"></div><div class="ln"></div><div class="ln s"></div><div class="ln"></div><div class="gap"></div>
+        <div class="ln s"></div><div class="ln m"></div>
+        <div class="firmas">
+          <div class="firma-box"><span class="trazo">C. Mendoza</span>Carlos Mendoza</div>
+          <div class="firma-box pend">Lucía Andrade<br>(pendiente)</div>
+          <div class="firma-box pend">Daniela Paredes<br>(pendiente)</div>
+        </div>
+      </div>
+    </section>
+
+    <aside>
+      <section class="card">
+        <h3 style="margin-bottom:.8rem">Datos del trámite</h3>
+        <div class="mail-resumen" style="margin:0">
+          <div><span>Enviado por</span><span>Daniela Paredes</span></div>
+          <div><span>Fecha de envío</span><span>22 oct 2026</span></div>
+          <div><span>Su firma</span><span>Firma manuscrita</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3 style="margin-bottom:.8rem">Orden de firmas</h3>
+        <ol class="timeline">
+          <li class="done"><span class="dot">&#10003;</span><div class="who">Carlos Mendoza</div><div class="when">Firmó el 22 oct</div></li>
+          <li class="turn"><span class="dot">2</span><div class="who">Lucía Andrade (usted)</div><div class="when">Turno activo</div></li>
+          <li><span class="dot">3</span><div class="who">Daniela Paredes</div><div class="when">Pendiente</div></li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <div class="stack">
+          <a class="btn btn-primary btn-block" href="12-firmar-documento.html">Aceptar y continuar a la firma</a>
+          <button class="btn btn-danger btn-block" type="button" data-abrir="modal-rechazo">Rechazar la firma</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<div class="overlay" id="modal-rechazo">
+  <div class="modal">
+    <h2>Rechazar la firma</h2>
+    <p class="muted">El trámite se detendrá y se avisará a Daniela Paredes con el motivo que escriba.</p>
+    <div class="field" style="margin-top:1rem">
+      <label for="motivo">Motivo del rechazo</label>
+      <textarea class="input" id="motivo">La cláusula quinta no coincide con lo acordado en la reunión.</textarea>
+    </div>
+    <div class="acciones">
+      <button class="btn btn-ghost" type="button" data-cerrar="modal-rechazo">Cancelar</button>
+      <button class="btn btn-danger" type="button" id="confirmar-rechazo">Confirmar rechazo</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('marca').innerHTML = MARCA;
+  document.getElementById('confirmar-rechazo').addEventListener('click', function () {
+    cerrarModal('modal-rechazo');
+    aviso('Rechazo registrado. Se notificó a la persona que solicitó la firma.');
+  });
+</script>
+</body>
+</html>

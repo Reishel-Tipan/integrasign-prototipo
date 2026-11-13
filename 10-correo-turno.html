@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Correo de turno de firma · IntegraSign</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<div class="mail">
+  <div class="mail-head">
+    <dl>
+      <dt>De</dt><dd>IntegraSign &lt;notificaciones@integrasign.ec&gt;</dd>
+      <dt>Para</dt><dd>Lucía Andrade &lt;lucia.andrade@correo.ec&gt;</dd>
+      <dt>Asunto</dt><dd><strong>Es su turno de firmar: Contrato de prestación de servicios</strong></dd>
+      <dt>Fecha</dt><dd>22 oct 2026, 09:43</dd>
+    </dl>
+  </div>
+  <div class="mail-body">
+    <div class="logo-line" id="marca"></div>
+    <p>Hola, Lucía:</p>
+    <p><strong>Daniela Paredes</strong> le envió un documento para que lo revise y lo firme. Carlos Mendoza ya firmó y ahora es su turno.</p>
+
+    <div class="mail-resumen">
+      <div><span>Documento</span><span>Contrato_servicios_2026.pdf</span></div>
+      <div><span>Su turno</span><span>2 de 3 firmantes</span></div>
+      <div><span>Tipo de firma</span><span>Firma manuscrita</span></div>
+      <div><span>El enlace vence</span><span>24 oct 2026, 09:43 (48 horas)</span></div>
+    </div>
+
+    <p style="text-align:center;margin-bottom:1.4rem">
+      <a class="btn btn-primary" href="11-revisar-documento.html">Revisar y firmar el documento</a>
+    </p>
+
+    <div class="alert info">
+      <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      <span>Este enlace es personal y de un solo uso. Si no lo utiliza antes de la fecha indicada, el trámite se registrará como vencido y se avisará a la persona que lo solicitó.</span>
+    </div>
+    <p class="small muted" style="margin-top:1.3rem">Si usted no esperaba este mensaje, puede ignorarlo. Correo automático, por favor no responda.</p>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('marca').innerHTML = MARCA;
+  if (/tipo=recordatorio/.test(location.search)) {
+    document.title = 'Recordatorio de vencimiento · IntegraSign';
+    document.querySelector('.mail-head dd strong').textContent = 'Recordatorio: su enlace de firma vence en 12 horas';
+    document.querySelectorAll('.mail-head dd')[3].textContent = '23 oct 2026, 21:43';
+    document.querySelector('.mail-body p:nth-of-type(2)').innerHTML = 'Le recordamos que <strong>Daniela Paredes</strong> espera su firma en el documento indicado. El enlace que recibió el 22 de octubre vence en <strong>12 horas</strong>.';
+    document.querySelectorAll('.mail-resumen div')[3].innerHTML = '<span>El enlace vence</span><span>24 oct 2026, 09:43 (en 12 horas)</span>';
+  }
+</script>
+</body>
+</html>

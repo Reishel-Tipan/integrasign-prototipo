@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Firmar documento · IntegraSign</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<header class="simple-top">
+  <span id="marca"></span>
+  <span class="link-info"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Enlace temporal · vence en 47 h 05 min</span>
+</header>
+
+<main class="content" style="margin:0 auto">
+  <div class="page-head">
+    <div>
+      <h1>Firmar documento</h1>
+      <p>Contrato_servicios_2026.pdf · todos los firmantes de este trámite firman con el mismo tipo de firma.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <section class="card">
+      <div class="row" style="margin-bottom:1.2rem">
+        <span class="small muted">Tipo de firma definido para este trámite:</span>
+        <span class="badge curso" id="tipo-badge">Firma manuscrita digitalizada</span>
+      </div>
+
+      <div id="metodos">
+        <div class="panel" id="m-p12">
+          <div class="field">
+            <label>Archivo del certificado</label>
+            <label class="dropzone" for="p12">
+              <svg class="ico" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+              <span><strong>Seleccione su archivo .p12</strong> o arrástrelo aquí</span>
+            </label>
+            <input id="p12" type="file" accept=".p12,.pfx" class="hidden">
+            <div id="p12-info" class="hidden" style="margin-top:.7rem"></div>
+          </div>
+          <div class="field">
+            <label for="clave">Clave del certificado</label>
+            <input class="input" id="clave" type="password" placeholder="Clave de su archivo .p12">
+          </div>
+          <div class="alert info"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>El archivo y la clave se usan solo para firmar ahora y se eliminan enseguida. La plataforma no los guarda.</span></div>
+        </div>
+
+        <div class="panel active" id="m-man">
+          <div class="field">
+            <label>Foto de su firma</label>
+            <label class="dropzone" for="foto">
+              <svg class="ico" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+              <span><strong>Suba una foto de su firma</strong> hecha en papel blanco</span>
+              <span class="small muted">JPG o PNG · buena luz y sin sombras</span>
+            </label>
+            <input id="foto" type="file" accept="image/*" class="hidden">
+          </div>
+          <div class="compara">
+            <figure><div class="foto sucia">L. Andrade</div><figcaption>Foto original</figcaption></figure>
+            <figure><div class="foto limpia">L. Andrade</div><figcaption>Firma limpia (fondo transparente)</figcaption></figure>
+          </div>
+          <div class="hint" style="margin-top:.7rem">Esta es la firma que se colocará en el documento.</div>
+        </div>
+      </div>
+
+      <label class="check" style="margin:1.3rem 0">
+        <input type="checkbox" checked> <span>Confirmo que revisé el documento y acepto firmarlo.</span>
+      </label>
+      <div class="row" style="justify-content:flex-end">
+        <a class="btn btn-ghost" href="11-revisar-documento.html">Volver</a>
+        <button class="btn btn-primary" type="button" id="firmar">Firmar documento</button>
+      </div>
+    </section>
+
+    <section class="visor">
+      <div class="visor-bar"><strong>Vista previa</strong><span class="visor-paginas">Página 8 de 8</span></div>
+      <div class="hoja">
+        <h4>CONTRATO DE PRESTACIÓN DE SERVICIOS</h4>
+        <div class="ln m"></div><div class="ln"></div><div class="ln s"></div><div class="gap"></div>
+        <div class="ln"></div><div class="ln m"></div><div class="ln x"></div>
+        <div class="firmas">
+          <div class="firma-box" id="fb-carlos"><span class="trazo">C. Mendoza</span>Carlos Mendoza</div>
+          <div class="firma-box" id="fb-lucia"><span class="trazo">L. Andrade</span>Lucía Andrade</div>
+          <div class="firma-box pend">Daniela Paredes<br>(pendiente)</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="overlay" id="listo">
+  <div class="modal" style="text-align:center">
+    <div class="mensaje" style="padding:0"><div class="gran" style="background:var(--ok-bg);color:var(--ok)"><svg class="ico" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div></div>
+    <h2>Documento firmado</h2>
+    <p class="muted">Su firma quedó registrada y el enlace ya no se puede volver a usar. Se avisó a Daniela Paredes, que es la siguiente en firmar.</p>
+    <div class="acciones" style="justify-content:center"><a class="btn btn-primary" href="10-correo-turno.html">Entendido</a></div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('marca').innerHTML = MARCA;
+  vincularArchivo('p12', 'p12-info', 'p12');
+  if (/tipo=electronica/.test(location.search)) {
+    document.getElementById('m-man').classList.remove('active');
+    document.getElementById('m-p12').classList.add('active');
+    document.getElementById('tipo-badge').textContent = 'Firma electrónica (.p12)';
+    document.getElementById('fb-carlos').innerHTML = '<span class="sello">Firmado con .p12<br>22/10/2026</span>Carlos Mendoza';
+    document.getElementById('fb-lucia').innerHTML = '<span class="sello">Se firmará<br>con .p12</span>Lucía Andrade';
+  }
+  document.getElementById('firmar').addEventListener('click', function () { abrirModal('listo'); });
+</script>
+</body>
+</html>
